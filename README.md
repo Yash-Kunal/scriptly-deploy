@@ -1,6 +1,3 @@
-<p align="center">
-  <img src="public/assets/scriptly_logo_updated.png" alt="Scriptly Logo" width="350"/>
-</p>
 
 <h1 align="center">Scriptly</h1>
 <p align="center">
