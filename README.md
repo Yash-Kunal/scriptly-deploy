@@ -27,20 +27,11 @@
 ---
 ## 📸 Screenshots
 
-### 🏠 Home Page  
-![Home Page](client/src/assets/homepage.png)
+### 🏠 Home Page & 💻 Coding Zone  
+![Home Page](client/src/assets/homepage.png) ![Coding Zone](client/src/assets/coding-zone.png)
 
-
-
-### 💻 Coding Zone 
-![Movie Details](client/src/assets/coding-zone.png)
-
-
-### 💬 Chats 
-![Favourites](client/src/assets/chats.png)
-
-### ⚙️ Settings (Languages, Font Style, Theme)
-![Settings](client/src/assets/settings.png)
+### 💬 Chats & ⚙️ Settings (Languages, Font Style, Theme)  
+![Chats](client/src/assets/chats.png) ![Settings](client/src/assets/settings.png)
 
 ---
 
