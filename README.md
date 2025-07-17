@@ -43,3 +43,22 @@
 ```bash
 git clone https://github.com/<your-username>/Scriptly.git
 cd Scriptly
+```
+### 2. Install dependencies
+```bash
+cd client
+npm install
+cd ../server
+npm install
+```
+
+### 3. Setup .env file
+
+### 4. Run the app
+```bash
+cd server
+npm run dev
+cd client
+npm run dev
+```
+
