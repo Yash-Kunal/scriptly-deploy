@@ -25,6 +25,24 @@
 - **Secure Rooms** – Join or create rooms for private collaborative sessions.
 
 ---
+## 📸 Screenshots
+
+### 🏠 Home Page  
+![Home Page](client/src/assets/homepage.png)
+
+
+
+### 💻 Coding Zone 
+![Movie Details](client/src/assets/coding-zone.png)
+
+
+### 💬 Chats 
+![Favourites](client/src/assets/chats.png)
+
+### ⚙️ Settings (Languages, Font Style, Theme)
+![Settings](client/src/assets/settings.png)
+
+---
 
 ## 🛠️ Tech Stack
 - **Frontend:** React.js, TypeScript, Tailwind CSS  
