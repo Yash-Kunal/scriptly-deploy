@@ -27,12 +27,17 @@
 ---
 ## 📸 Screenshots
 
-### 🏠 Home Page & 💻 Coding Zone  
-![Home Page](client/src/assets/homepage.png) ![Coding Zone](client/src/assets/coding-zone.png)
+### 🏠 Home Page & 💻 Coding Zone
+<p align="center">
+  <img src="client/src/assets/homepage.png" alt="Home Page" width="48%"/>
+  <img src="client/src/assets/coding-zone.png" alt="Coding Zone" width="48%"/>
+</p>
 
-### 💬 Chats & ⚙️ Settings (Languages, Font Style, Theme)  
-![Chats](client/src/assets/chats.png) ![Settings](client/src/assets/settings.png)
-
+### 💬 Chats & ⚙️ Settings
+<p align="center">
+  <img src="client/src/assets/chats.png" alt="Chats" width="48%"/>
+  <img src="client/src/assets/settings.png" alt="Settings" width="48%"/>
+</p>
 ---
 
 ## 🛠️ Tech Stack
