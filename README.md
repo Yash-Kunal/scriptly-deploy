@@ -43,7 +43,6 @@
 ## 🛠️ Tech Stack
 - **Frontend:** React.js, TypeScript, Tailwind CSS  
 - **Backend:** Node.js, Express.js, WebSockets (Socket.IO)  
-- **Database:** MongoDB  
 - **Code Execution API:** Piston API (for running code in multiple languages)  
 
 ---
