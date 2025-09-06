@@ -1,4 +1,7 @@
 import express, { Response, Request } from "express"
+import mongoose from "mongoose"
+import authRoutes from "./routes/auth"
+import roomsRoutes from "./routes/rooms"
 import dotenv from "dotenv"
 import http from "http"
 import cors from "cors"
@@ -12,6 +15,16 @@ dotenv.config()
 const app = express()
 
 app.use(express.json())
+
+// Auth routes
+app.use("/api/auth", authRoutes)
+app.use("/api/rooms", roomsRoutes)
+// MongoDB connection
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/codesync';
+mongoose.connect(MONGO_URI)
+	.then(() => console.log('MongoDB connected'))
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		.catch((err: any) => console.error('MongoDB connection error:', err));
 
 app.use(cors())
 
@@ -30,7 +43,12 @@ let userSocketMap: User[] = []
 
 // Function to get all users in a room
 function getUsersInRoom(roomId: string): User[] {
-	return userSocketMap.filter((user) => user.roomId == roomId)
+	return userSocketMap.filter((user) => user.roomId == roomId);
+}
+
+// Function to check if a user ID exists in a room
+function isUserIdInRoom(roomId: string, userId: string): boolean {
+	return userSocketMap.some((user) => user.roomId === roomId && user.userId === userId);
 }
 
 // Function to get room id by socket id
@@ -58,13 +76,15 @@ function getUserBySocketId(socketId: SocketId): User | null {
 io.on("connection", (socket) => {
 	// Handle user actions
 	socket.on(SocketEvent.JOIN_REQUEST, ({ roomId, username }) => {
-		// Check is username exist in the room
-		const isUsernameExist = getUsersInRoom(roomId).filter(
-			(u) => u.username === username
-		)
-		if (isUsernameExist.length > 0) {
-			io.to(socket.id).emit(SocketEvent.USERNAME_EXISTS)
-			return
+		// Remove any previous entry for this socket in this room
+		userSocketMap = userSocketMap.filter(
+			(u) => !(u.socketId === socket.id && u.roomId === roomId)
+		);
+
+		// Check if user ID exists in the room
+		if (isUserIdInRoom(roomId, socket.handshake.query.userId as string)) {
+			io.to(socket.id).emit(SocketEvent.USERNAME_EXISTS);
+			return;
 		}
 
 		const user = {
@@ -75,13 +95,14 @@ io.on("connection", (socket) => {
 			typing: false,
 			socketId: socket.id,
 			currentFile: null,
-		}
-		userSocketMap.push(user)
-		socket.join(roomId)
-		socket.broadcast.to(roomId).emit(SocketEvent.USER_JOINED, { user })
-		const users = getUsersInRoom(roomId)
-		io.to(socket.id).emit(SocketEvent.JOIN_ACCEPTED, { user, users })
-	})
+			userId: typeof socket.handshake.query.userId === 'string' ? socket.handshake.query.userId : '', // Ensure userId is a string
+		};
+		userSocketMap.push(user);
+		socket.join(roomId);
+		socket.broadcast.to(roomId).emit(SocketEvent.USER_JOINED, { user });
+		const users = getUsersInRoom(roomId);
+		io.to(socket.id).emit(SocketEvent.JOIN_ACCEPTED, { user, users });
+	});
 
 	socket.on("disconnecting", () => {
 		const user = getUserBySocketId(socket.id)

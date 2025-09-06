@@ -2,12 +2,12 @@ function Footer() {
     return (
         <footer className="static bottom-1 left-0 flex w-full justify-center sm:fixed">
             <span>
-                Build with ❤️ by{" "}
+                Build by{" "}
                 <a
-                    href="https://github.com/sahilatahar"
+                    href="https://github.com/Yash-Kunal"
                     className="text-primary underline underline-offset-1"
                 >
-                    sahilatahar
+                    Yash-Kunal
                 </a>
             </span>
         </footer>

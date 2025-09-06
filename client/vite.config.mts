@@ -32,7 +32,10 @@ export default defineConfig({
     preview: {
         port: 5173
     },
-    server:{
+    server: {
         open: true,
+        proxy: {
+            '/api': 'http://localhost:3000',
+        },
     }
 })

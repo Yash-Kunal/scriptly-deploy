@@ -11,6 +11,7 @@ interface User {
 	typing: boolean
 	currentFile: string | null
 	socketId: string
+	userId: string // Added userId to uniquely identify users
 }
 
 export { USER_CONNECTION_STATUS, User }

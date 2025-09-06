@@ -19,27 +19,22 @@ const FormComponent = () => {
     const createNewRoomId = () => {
         setCurrentUser({ ...currentUser, roomId: uuidv4() })
         toast.success("Created a new Room Id")
-        usernameRef.current?.focus()
     }
 
     const handleInputChanges = (e: ChangeEvent<HTMLInputElement>) => {
         const name = e.target.name
         const value = e.target.value
-        setCurrentUser({ ...currentUser, [name]: value })
+        if (name === 'roomId') {
+            setCurrentUser({ ...currentUser, roomId: value })
+        }
     }
 
     const validateForm = () => {
-        if (currentUser.username.trim().length === 0) {
-            toast.error("Enter your username")
-            return false
-        } else if (currentUser.roomId.trim().length === 0) {
+        if (currentUser.roomId.trim().length === 0) {
             toast.error("Enter a room id")
             return false
         } else if (currentUser.roomId.trim().length < 5) {
             toast.error("ROOM Id must be at least 5 characters long")
-            return false
-        } else if (currentUser.username.trim().length < 3) {
-            toast.error("Username must be at least 3 characters long")
             return false
         }
         return true
@@ -58,9 +53,6 @@ const FormComponent = () => {
         if (currentUser.roomId.length > 0) return
         if (location.state?.roomId) {
             setCurrentUser({ ...currentUser, roomId: location.state.roomId })
-            if (currentUser.username.length === 0) {
-                toast.success("Enter your username")
-            }
         }
     }, [currentUser, location.state?.roomId, setCurrentUser])
 
@@ -99,15 +91,6 @@ const FormComponent = () => {
                     className="w-full rounded-md border border-gray-500 bg-darkHover px-3 py-3 focus:outline-none"
                     onChange={handleInputChanges}
                     value={currentUser.roomId}
-                />
-                <input
-                    type="text"
-                    name="username"
-                    placeholder="Username"
-                    className="w-full rounded-md border border-gray-500 bg-darkHover px-3 py-3 focus:outline-none"
-                    onChange={handleInputChanges}
-                    value={currentUser.username}
-                    ref={usernameRef}
                 />
                 <button
                     type="submit"

@@ -53,7 +53,7 @@ function ChatList() {
                     >
                         <div className="flex justify-between">
                             <span className="text-xs text-primary">
-                                {message.username}
+                                {message.username === currentUser.username ? 'You' : message.username}
                             </span>
                             <span className="text-xs text-white">
                                 {message.timestamp}
