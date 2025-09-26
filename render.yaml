@@ -1,0 +1,31 @@
+services:
+  # Backend Service  
+  - type: web
+    name: scriptly-server
+    env: node
+    buildCommand: cd server && npm install && npm run build
+    startCommand: cd server && npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        value: mongodb+srv://yashkunal724:2ojEcfUmwGNoIf3S@clustercb.78w1b.mongodb.net/scri
+      - key: JWT_SECRET
+        value: secret_jwt_key
+      - key: PORT
+        value: 10000
+    plan: free
+    region: oregon
+
+  # Frontend Service (Static Site)
+  - type: static
+    name: scriptly-client
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: client/dist
+    autoDeploy: true
+    envVars:
+      - key: VITE_BACKEND_URL
+        value: https://scriptly-server.onrender.com
+    plan: free
+    region: oregon
