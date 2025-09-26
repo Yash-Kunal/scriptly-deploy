@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
 interface AuthFormProps {
   onAuthSuccess: (token: string, user: { email: string; username: string }) => void;
 }
@@ -18,8 +20,8 @@ export default function AuthForm({ onAuthSuccess }: AuthFormProps) {
     setLoading(true);
     try {
       const url = isLogin
-        ? '/api/auth/login'
-        : '/api/auth/register';
+        ? `${BACKEND_URL}/api/auth/login`
+        : `${BACKEND_URL}/api/auth/register`;
       const body = isLogin
         ? { emailOrUsername: email || username, password }
         : { email, username, password };
