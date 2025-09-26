@@ -30,6 +30,18 @@ app.use(cors())
 
 app.use(express.static(path.join(__dirname, "public"))) // Serve static files
 
+// Serve static files from client build in production
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../../client/dist')));
+    
+    // Handle React routing - send all non-API requests to React app
+    app.get('*', (req: Request, res: Response) => {
+        if (!req.path.startsWith('/api')) {
+            res.sendFile(path.join(__dirname, '../../client/dist/index.html'));
+        }
+    });
+}
+
 const server = http.createServer(app)
 const io = new Server(server, {
 	cors: {
