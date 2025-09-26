@@ -26,7 +26,16 @@ mongoose.connect(MONGO_URI)
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		.catch((err: any) => console.error('MongoDB connection error:', err));
 
-app.use(cors())
+app.use(cors({
+    origin: [
+        'http://localhost:5173', // Local development
+        'http://localhost:3000', // Local development
+        'https://scriptly-client.onrender.com' // Production client
+    ],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}))
 
 app.use(express.static(path.join(__dirname, "public"))) // Serve static files
 
@@ -45,7 +54,13 @@ if (process.env.NODE_ENV === 'production') {
 const server = http.createServer(app)
 const io = new Server(server, {
 	cors: {
-		origin: "*",
+		origin: [
+			'http://localhost:5173',
+			'http://localhost:3000', 
+			'https://scriptly-client.onrender.com'
+		],
+		credentials: true,
+		methods: ['GET', 'POST']
 	},
 	maxHttpBufferSize: 1e8,
 	pingTimeout: 60000,
