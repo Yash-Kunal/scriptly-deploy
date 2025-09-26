@@ -29,4 +29,3 @@ services:
       - key: VITE_BACKEND_URL
         value: https://scriptly-server.onrender.com
     plan: free
-    region: oregon
