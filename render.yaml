@@ -19,8 +19,9 @@ services:
     region: oregon
 
   # Frontend Service (Static Site)
-  - type: static
+  - type: web
     name: scriptly-client
+    env: static
     buildCommand: cd client && npm install && npm run build
     staticPublishPath: client/dist
     autoDeploy: true
