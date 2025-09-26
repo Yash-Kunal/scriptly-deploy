@@ -2,7 +2,7 @@ import { useAppContext } from "@/context/AppContext"
 import { useSocket } from "@/context/SocketContext"
 import { SocketEvent } from "@/types/socket"
 import { USER_STATUS } from "@/types/user"
-import { ChangeEvent, FormEvent, useEffect, useRef } from "react"
+import { ChangeEvent, FormEvent, useEffect } from "react"
 import { toast } from "react-hot-toast"
 import { useLocation, useNavigate } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
@@ -13,7 +13,6 @@ const FormComponent = () => {
     const { currentUser, setCurrentUser, status, setStatus } = useAppContext()
     const { socket } = useSocket()
 
-    const usernameRef = useRef<HTMLInputElement | null>(null)
     const navigate = useNavigate()
 
     const createNewRoomId = () => {

@@ -22,7 +22,7 @@ services:
   - type: web
     name: scriptly-client
     env: static
-    buildCommand: cd client && npm install && npm run build
+    buildCommand: cd client && npm install && npm run build --verbose
     staticPublishPath: client/dist
     autoDeploy: true
     envVars:

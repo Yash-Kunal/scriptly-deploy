@@ -7,7 +7,7 @@ import { useSocket } from "@/context/SocketContext"
 import useFullScreen from "@/hooks/useFullScreen"
 import useUserActivity from "@/hooks/useUserActivity"
 import { SocketEvent } from "@/types/socket"
-import { USER_STATUS, User } from "@/types/user"
+import { USER_STATUS, RemoteUser, USER_CONNECTION_STATUS } from "@/types/user"
 import { useEffect } from "react"
 import { useLocation, useNavigate, useParams } from "react-router-dom"
 
@@ -30,9 +30,17 @@ function EditorPage() {
                 state: { roomId },
             })
         } else if (roomId) {
-            const user: User = { username, roomId }
+            const user: RemoteUser = { 
+                username, 
+                roomId,
+                status: USER_CONNECTION_STATUS.OFFLINE,
+                cursorPosition: 0,
+                typing: false,
+                currentFile: "",
+                socketId: "",
+            }
             setCurrentUser(user)
-            socket.emit(SocketEvent.JOIN_REQUEST, user)
+            socket.emit(SocketEvent.JOIN_REQUEST, { username, roomId })
         }
     }, [
         currentUser.username,

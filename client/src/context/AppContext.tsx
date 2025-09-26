@@ -3,7 +3,7 @@ import {
     AppContext as AppContextType,
     DrawingData,
 } from "@/types/app";
-import { RemoteUser, USER_STATUS, User } from "@/types/user";
+import { RemoteUser, USER_STATUS, USER_CONNECTION_STATUS } from "@/types/user";
 import { ReactNode, createContext, useContext, useState } from "react";
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -21,9 +21,14 @@ export const useAppContext = (): AppContextType => {
 function AppContextProvider({ children }: { children: ReactNode }) {
     const [users, setUsers] = useState<RemoteUser[]>([]);
     const [status, setStatus] = useState<USER_STATUS>(USER_STATUS.INITIAL);
-    const [currentUser, setCurrentUser] = useState<User>({
+    const [currentUser, setCurrentUser] = useState<RemoteUser>({
         username: "",
         roomId: "",
+        status: USER_CONNECTION_STATUS.OFFLINE,
+        cursorPosition: 0,
+        typing: false,
+        currentFile: "",
+        socketId: "",
     });
     const [activityState, setActivityState] = useState<ACTIVITY_STATE>(
         ACTIVITY_STATE.CODING
