@@ -14,18 +14,7 @@ dotenv.config()
 
 const app = express()
 
-app.use(express.json())
-
-// Auth routes
-app.use("/api/auth", authRoutes)
-app.use("/api/rooms", roomsRoutes)
-// MongoDB connection
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/codesync';
-mongoose.connect(MONGO_URI)
-	.then(() => console.log('MongoDB connected'))
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		.catch((err: any) => console.error('MongoDB connection error:', err));
-
+// CORS configuration MUST come first, before any routes
 app.use(cors({
     origin: [
         'http://localhost:5173', // Local development
@@ -34,8 +23,26 @@ app.use(cors({
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    preflightContinue: false,
+    optionsSuccessStatus: 204
 }))
+
+// Handle preflight requests explicitly
+app.options('*', cors())
+
+app.use(express.json())
+
+// MongoDB connection
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/codesync';
+mongoose.connect(MONGO_URI)
+	.then(() => console.log('MongoDB connected'))
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		.catch((err: any) => console.error('MongoDB connection error:', err));
+
+// Auth routes
+app.use("/api/auth", authRoutes)
+app.use("/api/rooms", roomsRoutes)
 
 app.use(express.static(path.join(__dirname, "public"))) // Serve static files
 
