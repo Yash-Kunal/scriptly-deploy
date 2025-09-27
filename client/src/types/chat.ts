@@ -2,6 +2,7 @@ interface ChatMessage {
     id: string
     message: string
     username: string
+    socketId?: string
     timestamp: string
 }
 

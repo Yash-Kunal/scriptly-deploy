@@ -24,6 +24,7 @@ function ChatInput() {
                 id: uuidV4(),
                 message: inputVal,
                 username: currentUser.username,
+                socketId: currentUser.socketId,
                 timestamp: formatDate(new Date().toISOString()),
             }
             socket.emit(SocketEvent.SEND_MESSAGE, { message })

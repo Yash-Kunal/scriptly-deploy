@@ -46,14 +46,14 @@ function ChatList() {
                         key={index}
                         className={
                             "mb-2 w-[80%] self-end break-words rounded-md bg-dark px-3 py-2" +
-                            (message.username === currentUser.username
+                            (message.socketId && message.socketId === currentUser.socketId
                                 ? " ml-auto "
                                 : "")
                         }
                     >
                         <div className="flex justify-between">
                             <span className="text-xs text-primary">
-                                {message.username || 'Anonymous'}
+                                {message.username || (message.socketId ? `Anonymous (${message.socketId.slice(0,6)})` : 'Anonymous')}
                             </span>
                             <span className="text-xs text-white">
                                 {message.timestamp}

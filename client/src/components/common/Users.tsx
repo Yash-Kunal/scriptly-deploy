@@ -6,16 +6,16 @@ import Avatar from "react-avatar"
 function Users() {
     const { users, currentUser } = useAppContext()
 
-    // Include current user in the list if not already present
-    const allUsers = users.find(user => user.username === currentUser.username) 
-        ? users 
+    // Include current user in the list if not already present (compare by socketId)
+    const allUsers = users.find(user => user.socketId === currentUser.socketId)
+        ? users
         : [...users, currentUser];
 
     return (
         <div className="flex min-h-[200px] flex-grow justify-center overflow-y-auto py-2">
             <div className="flex h-full w-full flex-wrap items-start gap-x-2 gap-y-6">
                 {allUsers.map((user) => {
-                    return <User key={user.socketId || user.username} user={user} isMe={user.username === currentUser.username} />
+                    return <User key={user.socketId || user.username} user={user} isMe={user.socketId === currentUser.socketId} />
                 })}
             </div>
         </div>
@@ -23,8 +23,9 @@ function Users() {
 }
 
 const User = ({ user, isMe }: { user: RemoteUser, isMe?: boolean }) => {
-    const { username, status } = user;
-    const displayName = username || 'Anonymous';
+    const { username, status, socketId } = user;
+    // If username is empty, show a short socketId suffix so multiple anonymous users can be distinguished
+    const displayName = username || `Anonymous (${socketId?.slice(0, 6)})`;
     const title = `${displayName} - ${status === USER_CONNECTION_STATUS.ONLINE ? "online" : "offline"}`;
 
     return (
