@@ -4,7 +4,8 @@ import {
     DrawingData,
 } from "@/types/app";
 import { RemoteUser, USER_STATUS, USER_CONNECTION_STATUS } from "@/types/user";
-import { ReactNode, createContext, useContext, useState } from "react";
+import { ReactNode, createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "../hooks/useAuth";
 
 const AppContext = createContext<AppContextType | null>(null);
 
@@ -19,24 +20,39 @@ export const useAppContext = (): AppContextType => {
 };
 
 function AppContextProvider({ children }: { children: ReactNode }) {
+    const { user } = useAuth();
     const [users, setUsers] = useState<RemoteUser[]>([]);
     const [status, setStatus] = useState<USER_STATUS>(USER_STATUS.INITIAL);
     
-    // Initialize currentUser with username from localStorage if available
-    const [currentUser, setCurrentUser] = useState<RemoteUser>(() => {
-        const storedUser = localStorage.getItem('user');
-        const username = storedUser ? JSON.parse(storedUser).username : "";
-        
-        return {
-            username: username || "",
-            roomId: "",
-            status: USER_CONNECTION_STATUS.OFFLINE,
-            cursorPosition: 0,
-            typing: false,
-            currentFile: "",
-            socketId: "",
-        };
+    // Initialize currentUser with username from auth state
+    const [currentUser, setCurrentUser] = useState<RemoteUser>({
+        username: user?.username || "",
+        roomId: "",
+        status: USER_CONNECTION_STATUS.OFFLINE,
+        cursorPosition: 0,
+        typing: false,
+        currentFile: "",
+        socketId: "",
     });
+    
+    // Update currentUser when auth user changes
+    useEffect(() => {
+        if (user) {
+            console.log("Auth state changed - updating username to:", user.username);
+            setCurrentUser(prev => ({
+                ...prev,
+                username: user.username
+            }));
+        } else {
+            console.log("Auth user is null, resetting username");
+            setCurrentUser(prev => ({
+                ...prev,
+                username: "",
+                roomId: ""
+            }));
+        }
+    }, [user, setCurrentUser]);
+    
     const [activityState, setActivityState] = useState<ACTIVITY_STATE>(
         ACTIVITY_STATE.CODING
     );

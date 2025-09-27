@@ -2,23 +2,27 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom"
 import Toast from "./components/toast/Toast"
 import EditorPage from "./pages/EditorPage"
 import HomePage from "./pages/HomePage"
-import { useState } from "react";
 import AuthForm from "./components/AuthForm";
+import { useAuth } from "./hooks/useAuth";
+import { useEffect } from "react";
 
 const App = () => {
-    const [token, setToken] = useState<string | null>(localStorage.getItem('token'));
-    const [user, setUser] = useState<{ email: string; username: string } | null>(
-        localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null
-    );
+    const { user, login, logout, isAuthenticated } = useAuth();
+    
+    // Debug logging for auth state changes
+    useEffect(() => {
+        console.log("App.tsx - Auth state changed:", { 
+            isAuthenticated, 
+            username: user?.username 
+        });
+    }, [isAuthenticated, user]);
 
     const handleAuthSuccess = (jwt: string, userObj: { email: string; username: string }) => {
-        setToken(jwt);
-        setUser(userObj);
-        localStorage.setItem('token', jwt);
-        localStorage.setItem('user', JSON.stringify(userObj));
+        console.log("Auth success, logging in with:", userObj.username);
+        login(jwt, userObj);
     };
 
-    if (!token || !user) {
+    if (!isAuthenticated) {
         return <AuthForm onAuthSuccess={handleAuthSuccess} />;
     }
 
@@ -27,12 +31,7 @@ const App = () => {
             <div className="fixed top-4 right-4 z-50 flex items-center gap-2 bg-gray-900 bg-opacity-80 px-3 py-2 rounded shadow border border-gray-700">
                 <span className="text-white font-semibold text-base truncate max-w-[120px]">{user?.username}</span>
                 <button
-                    onClick={() => {
-                        setToken(null);
-                        setUser(null);
-                        localStorage.removeItem('token');
-                        localStorage.removeItem('user');
-                    }}
+                    onClick={logout}
                     className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 font-semibold text-sm shadow"
                 >
                     Logout

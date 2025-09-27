@@ -6,6 +6,7 @@ import { useAppContext } from "@/context/AppContext"
 import { useSocket } from "@/context/SocketContext"
 import useFullScreen from "@/hooks/useFullScreen"
 import useUserActivity from "@/hooks/useUserActivity"
+import { useAuth } from "@/hooks/useAuth"
 import { SocketEvent } from "@/types/socket"
 import { USER_STATUS, RemoteUser, USER_CONNECTION_STATUS } from "@/types/user"
 import { useEffect } from "react"
@@ -21,14 +22,14 @@ function EditorPage() {
     const { status, setCurrentUser, currentUser } = useAppContext()
     const { socket } = useSocket()
     const location = useLocation()
+    const { user: authUser } = useAuth()
 
     useEffect(() => {
-        // Prioritize existing username from currentUser (which now loads from localStorage)
-        // But if username isn't set yet, try to get it from location state
-        let username = currentUser.username;
+        // Get username from auth state first (most reliable source)
+        let username = authUser?.username;
         
-        // If no username from localStorage, try location state
-        if (!username || username.length === 0) {
+        // If not in auth state, fallback to location state
+        if (!username) {
             username = location.state?.username;
         }
 
@@ -40,8 +41,14 @@ function EditorPage() {
             return;
         }
 
-        // Only update currentUser if we need to set roomId or if username changed
-        if (roomId && (currentUser.roomId !== roomId || !currentUser.username)) {
+        // Update currentUser if roomId changed, username changed, or if currentUser doesn't match auth username
+        const shouldUpdateUser = roomId && 
+            (currentUser.roomId !== roomId || 
+             currentUser.username !== username ||
+             !currentUser.username);
+             
+        if (shouldUpdateUser) {
+            console.log("EditorPage: Updating current user with username:", username);
             const user: RemoteUser = { 
                 username, 
                 roomId,
@@ -62,6 +69,7 @@ function EditorPage() {
         roomId,
         setCurrentUser,
         socket,
+        authUser // Add authUser to dependencies to re-run effect when auth state changes
     ])
 
     if (status === USER_STATUS.CONNECTION_FAILED) {
