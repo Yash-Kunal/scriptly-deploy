@@ -23,13 +23,25 @@ function EditorPage() {
     const location = useLocation()
 
     useEffect(() => {
-        if (currentUser.username.length > 0) return
-        const username = location.state?.username
-        if (username === undefined) {
+        // Prioritize existing username from currentUser (which now loads from localStorage)
+        // But if username isn't set yet, try to get it from location state
+        let username = currentUser.username;
+        
+        // If no username from localStorage, try location state
+        if (!username || username.length === 0) {
+            username = location.state?.username;
+        }
+
+        if (!username) {
+            // If we still don't have a username, redirect to homepage
             navigate("/", {
                 state: { roomId },
-            })
-        } else if (roomId) {
+            });
+            return;
+        }
+
+        // Only update currentUser if we need to set roomId or if username changed
+        if (roomId && (currentUser.roomId !== roomId || !currentUser.username)) {
             const user: RemoteUser = { 
                 username, 
                 roomId,
@@ -39,11 +51,12 @@ function EditorPage() {
                 currentFile: "",
                 socketId: "",
             }
-            setCurrentUser(user)
-            socket.emit(SocketEvent.JOIN_REQUEST, { username, roomId })
+            setCurrentUser(user);
+            socket.emit(SocketEvent.JOIN_REQUEST, { username, roomId });
         }
     }, [
         currentUser.username,
+        currentUser.roomId,
         location.state?.username,
         navigate,
         roomId,

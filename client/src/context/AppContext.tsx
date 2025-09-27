@@ -21,14 +21,21 @@ export const useAppContext = (): AppContextType => {
 function AppContextProvider({ children }: { children: ReactNode }) {
     const [users, setUsers] = useState<RemoteUser[]>([]);
     const [status, setStatus] = useState<USER_STATUS>(USER_STATUS.INITIAL);
-    const [currentUser, setCurrentUser] = useState<RemoteUser>({
-        username: "",
-        roomId: "",
-        status: USER_CONNECTION_STATUS.OFFLINE,
-        cursorPosition: 0,
-        typing: false,
-        currentFile: "",
-        socketId: "",
+    
+    // Initialize currentUser with username from localStorage if available
+    const [currentUser, setCurrentUser] = useState<RemoteUser>(() => {
+        const storedUser = localStorage.getItem('user');
+        const username = storedUser ? JSON.parse(storedUser).username : "";
+        
+        return {
+            username: username || "",
+            roomId: "",
+            status: USER_CONNECTION_STATUS.OFFLINE,
+            cursorPosition: 0,
+            typing: false,
+            currentFile: "",
+            socketId: "",
+        };
     });
     const [activityState, setActivityState] = useState<ACTIVITY_STATE>(
         ACTIVITY_STATE.CODING
