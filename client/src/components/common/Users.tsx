@@ -35,7 +35,7 @@ const User = ({ user, isMe }: { user: RemoteUser, isMe?: boolean }) => {
         >
             <Avatar name={displayName} size="50" round={"12px"} title={title} />
             <p className="line-clamp-2 max-w-full text-ellipsis break-words font-semibold">
-                {displayName} {isMe ? '(Me)' : ''}
+                {displayName}
             </p>
             <div
                 className={`absolute right-5 top-0 h-3 w-3 rounded-full ${
