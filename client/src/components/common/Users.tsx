@@ -23,9 +23,9 @@ function Users() {
 }
 
 const User = ({ user, isMe }: { user: RemoteUser, isMe?: boolean }) => {
-    const { username, status, socketId } = user;
-    // If username is empty, show a short socketId suffix so multiple anonymous users can be distinguished
-    const displayName = username || `Anonymous (${socketId?.slice(0, 6)})`;
+    const { username, status } = user;
+    // Show only the provided username; fall back to 'Anonymous' if empty
+    const displayName = username || 'Anonymous';
     const title = `${displayName} - ${status === USER_CONNECTION_STATUS.ONLINE ? "online" : "offline"}`;
 
     return (

@@ -53,7 +53,7 @@ function ChatList() {
                     >
                         <div className="flex justify-between">
                             <span className="text-xs text-primary">
-                                {message.username || (message.socketId ? `Anonymous (${message.socketId.slice(0,6)})` : 'Anonymous')}
+                                {message.username || 'Anonymous'}
                             </span>
                             <span className="text-xs text-white">
                                 {message.timestamp}
