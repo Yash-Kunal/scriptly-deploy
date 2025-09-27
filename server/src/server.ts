@@ -260,6 +260,16 @@ io.on("connection", (socket) => {
 	socket.on(SocketEvent.SEND_MESSAGE, ({ message }) => {
 		const roomId = getRoomId(socket.id)
 		if (!roomId) return
+		
+		// Ensure username is properly set before broadcasting
+		const user = getUserBySocketId(socket.id)
+		if (user && (!message.username || message.username === "")) {
+			message.username = user.username
+		}
+		
+		// Add socketId to ensure proper message alignment on client
+		message.socketId = socket.id
+		
 		socket.broadcast
 			.to(roomId)
 			.emit(SocketEvent.RECEIVE_MESSAGE, { message })
