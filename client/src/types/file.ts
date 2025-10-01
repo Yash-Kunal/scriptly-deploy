@@ -29,6 +29,8 @@ interface FileContext {
     renameFile: (fileId: Id, newName: FileName) => boolean
     deleteFile: (fileId: Id) => void
     downloadFilesAndFolders: () => void
+    // Reset file structure to initial default (used when switching rooms)
+    resetFiles: () => void
 }
 
 export { FileSystemItem, FileContent, FileContext, Id, FileName }

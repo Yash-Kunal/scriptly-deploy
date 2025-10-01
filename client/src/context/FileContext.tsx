@@ -53,6 +53,14 @@ function FileContextProvider({ children }: { children: ReactNode }) {
         openFiles[0],
     )
 
+    // Reset files to initial structure (used when leaving/joining rooms)
+    const resetFiles = useCallback(() => {
+        setFileStructure(initialFileStructure)
+        const initialFiles = initialFileStructure.children ? initialFileStructure.children : []
+        setOpenFiles(initialFiles)
+        setActiveFile(initialFiles[0] || null)
+    }, [setFileStructure, setOpenFiles, setActiveFile])
+
     // Function to toggle the isOpen property of a directory (Directory Open/Close)
     const toggleDirectory = (dirId: Id) => {
         const toggleDir = (directory: FileSystemItem): FileSystemItem => {
@@ -785,6 +793,7 @@ function FileContextProvider({ children }: { children: ReactNode }) {
                 fileStructure,
                 openFiles,
                 activeFile,
+                resetFiles,
                 setActiveFile,
                 closeFile,
                 toggleDirectory,

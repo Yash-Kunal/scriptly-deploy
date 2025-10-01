@@ -37,21 +37,27 @@ function AppContextProvider({ children }: { children: ReactNode }) {
     
     // Update currentUser when auth user changes
     useEffect(() => {
+        // Only update currentUser if the username actually changed to avoid
+        // triggering a render loop where multiple components keep updating each other.
         if (user) {
-            console.log("Auth state changed - updating username to:", user.username);
-            setCurrentUser(prev => ({
-                ...prev,
-                username: user.username
-            }));
+            if (user.username && user.username !== currentUser.username) {
+                console.log("Auth state changed - updating username to:", user.username);
+                setCurrentUser(prev => ({
+                    ...prev,
+                    username: user.username
+                }));
+            }
         } else {
-            console.log("Auth user is null, resetting username");
-            setCurrentUser(prev => ({
-                ...prev,
-                username: "",
-                roomId: ""
-            }));
+            if (currentUser.username !== "" || currentUser.roomId !== "") {
+                console.log("Auth user is null, resetting username");
+                setCurrentUser(prev => ({
+                    ...prev,
+                    username: "",
+                    roomId: ""
+                }));
+            }
         }
-    }, [user, setCurrentUser]);
+    }, [user, currentUser.username, currentUser.roomId, setCurrentUser]);
     
     const [activityState, setActivityState] = useState<ACTIVITY_STATE>(
         ACTIVITY_STATE.CODING
