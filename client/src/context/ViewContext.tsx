@@ -58,5 +58,7 @@ function ViewContextProvider({ children }: { children: ReactNode }) {
     )
 }
 
-export { ViewContextProvider }
-export default ViewContext
+// Export both the context and the provider. Default export should be the provider
+// so Vite's React plugin can consistently fast-refresh the component.
+export { ViewContext, ViewContextProvider }
+export default ViewContextProvider

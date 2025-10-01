@@ -78,5 +78,7 @@ function AppContextProvider({ children }: { children: ReactNode }) {
     );
 }
 
-export { AppContextProvider };
-export default AppContext;
+// Export both the context and the provider. Default export should be the provider
+// so Vite's React plugin can consistently fast-refresh the component.
+export { AppContext, AppContextProvider };
+export default AppContextProvider;

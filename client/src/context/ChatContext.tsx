@@ -54,5 +54,7 @@ function ChatContextProvider({ children }: { children: ReactNode }) {
     )
 }
 
-export { ChatContextProvider }
-export default ChatContext
+// Export both the context and the provider. Default export should be the provider
+// so Vite's React plugin can consistently fast-refresh the component.
+export { ChatContext, ChatContextProvider }
+export default ChatContextProvider

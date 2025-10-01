@@ -806,5 +806,7 @@ function FileContextProvider({ children }: { children: ReactNode }) {
     )
 }
 
-export { FileContextProvider }
-export default FileContext
+// Export both the context and the provider. Default export should be the provider
+// so Vite's React plugin can consistently fast-refresh the component.
+export { FileContext, FileContextProvider }
+export default FileContextProvider

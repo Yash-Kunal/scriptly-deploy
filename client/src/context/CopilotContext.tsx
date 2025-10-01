@@ -74,5 +74,7 @@ const CopilotContextProvider = ({ children }: { children: ReactNode }) => {
     )
 }
 
-export { CopilotContextProvider }
-export default CopilotContext
+// Export both the context and the provider. Default export should be the provider
+// so Vite's React plugin can consistently fast-refresh the component.
+export { CopilotContext, CopilotContextProvider }
+export default CopilotContextProvider

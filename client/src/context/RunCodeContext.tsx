@@ -117,5 +117,7 @@ const RunCodeContextProvider = ({ children }: { children: ReactNode }) => {
     )
 }
 
-export { RunCodeContextProvider }
-export default RunCodeContext
+// Export both the context and the provider. Default export should be the provider
+// so Vite's React plugin can consistently fast-refresh the component.
+export { RunCodeContext, RunCodeContextProvider }
+export default RunCodeContextProvider

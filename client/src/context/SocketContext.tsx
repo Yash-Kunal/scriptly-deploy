@@ -141,5 +141,7 @@ const SocketProvider = ({ children }: { children: ReactNode }) => {
     )
 }
 
-export { SocketProvider }
-export default SocketContext
+// Export both the context and the provider. Default export should be the provider
+// so Vite's React plugin can consistently fast-refresh the component.
+export { SocketContext, SocketProvider }
+export default SocketProvider

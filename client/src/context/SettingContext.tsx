@@ -25,10 +25,10 @@ export const useSettings = (): SettingsContextType => {
 
 const defaultSettings: Settings = {
     theme: "Dracula",
-    language: "Javascript",
+    language: "cpp",
     fontSize: 16,
     fontFamily: "Space Mono",
-    showGitHubCorner: true,
+    showGitHubCorner: false,
 }
 
 function SettingContextProvider({ children }: { children: ReactNode }) {
@@ -106,5 +106,7 @@ function SettingContextProvider({ children }: { children: ReactNode }) {
     )
 }
 
-export { SettingContextProvider }
-export default SettingContext
+// Export both the context and the provider. Default export should be the provider
+// so Vite's React plugin can consistently fast-refresh the component.
+export { SettingContext, SettingContextProvider }
+export default SettingContextProvider
