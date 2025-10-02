@@ -2,6 +2,8 @@ import express, { Response, Request } from "express"
 import mongoose from "mongoose"
 import authRoutes from "./routes/auth"
 import roomsRoutes from "./routes/rooms"
+import roomFilesRoutes from "./routes/roomFiles"
+import { Room } from "./models/Room"
 import dotenv from "dotenv"
 import http from "http"
 import cors from "cors"
@@ -43,6 +45,7 @@ mongoose.connect(MONGO_URI)
 // Auth routes
 app.use("/api/auth", authRoutes)
 app.use("/api/rooms", roomsRoutes)
+app.use("/api/rooms", roomFilesRoutes)
 
 app.use(express.static(path.join(__dirname, "public"))) // Serve static files
 
@@ -108,12 +111,29 @@ function getUserBySocketId(socketId: SocketId): User | null {
 }
 
 io.on("connection", (socket) => {
+    const MAX_ROOM_CAPACITY = 5
 	// Handle user actions
 	socket.on(SocketEvent.JOIN_REQUEST, ({ roomId, username }) => {
 		// Remove any previous entry for this socket in this room
 		userSocketMap = userSocketMap.filter(
 			(u) => !(u.socketId === socket.id && u.roomId === roomId)
 		);
+
+		// Enforce room capacity using Socket.IO adapter room size
+		try {
+			const roomSet = io.sockets.adapter.rooms.get(roomId)
+			const currentCount = roomSet ? roomSet.size : 0
+			if (currentCount >= MAX_ROOM_CAPACITY) {
+				// Notify the joining socket that the room is full
+				socket.emit("room-full", {
+					roomId,
+					message: `Room ${roomId} is full. Maximum allowed users: ${MAX_ROOM_CAPACITY}`,
+				})
+				return
+			}
+		} catch (err) {
+			console.warn("Failed to check room capacity", err)
+		}
 
 		// Check if user ID exists in the room
 		if (isUserIdInRoom(roomId, socket.handshake.query.userId as string)) {
@@ -136,6 +156,29 @@ io.on("connection", (socket) => {
 		socket.broadcast.to(roomId).emit(SocketEvent.USER_JOINED, { user });
 		const users = getUsersInRoom(roomId);
 		io.to(socket.id).emit(SocketEvent.JOIN_ACCEPTED, { user, users });
+
+		// Load or create room files and send to the joining client
+		;(async () => {
+			try {
+				let room = await Room.findOne({ roomId })
+				if (!room) {
+					const defaultFile = {
+						name: "main.cpp",
+						content: `#include <iostream>\n\nint main() {\n  std::cout << "Hello world" << std::endl;\n  return 0;\n}`,
+						language: "cpp",
+					}
+					// cast to any to avoid TypeScript producing a too-complex union type
+					room = (await Room.create({ roomId, files: [defaultFile] })) as any
+				}
+				if (room) {
+					io.to(socket.id).emit("room-files", { files: room.files })
+				} else {
+					console.error("room is null after creation/fetch for roomId", roomId)
+				}
+			} catch (err) {
+				console.error("error loading room files for join", err)
+			}
+		})()
 	});
 
 	socket.on("disconnecting", () => {
@@ -180,6 +223,18 @@ io.on("connection", (socket) => {
 			dirId,
 			children,
 		})
+	})
+
+	// Listen for save-room-files from clients and persist to DB
+	socket.on("save-room-files", async ({ roomId, files }) => {
+		if (!roomId) return
+		try {
+			await Room.findOneAndUpdate({ roomId }, { files, updatedAt: new Date() }, { upsert: true })
+			// Broadcast updated files to others in the room
+			socket.to(roomId).emit("room-files-updated", { files })
+		} catch (err) {
+			console.error("save-room-files error", err)
+		}
 	})
 
 	socket.on(SocketEvent.DIRECTORY_RENAMED, ({ dirId, newName }) => {

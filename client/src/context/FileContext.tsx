@@ -22,6 +22,7 @@ import {
     useContext,
     useEffect,
     useState,
+    useRef,
 } from "react"
 import { toast } from "react-hot-toast"
 import { v4 as uuidv4 } from "uuid"
@@ -40,7 +41,7 @@ export const useFileSystem = (): FileContextType => {
 
 function FileContextProvider({ children }: { children: ReactNode }) {
     const { socket } = useSocket()
-    const { setUsers, drawingData } = useAppContext()
+    const { setUsers, drawingData, currentUser } = useAppContext()
 
     const [fileStructure, setFileStructure] =
         useState<FileSystemItem>(initialFileStructure)
@@ -786,6 +787,46 @@ function FileContextProvider({ children }: { children: ReactNode }) {
         handleUserJoined,
         socket,
     ])
+
+    // Autosave: debounce changes to fileStructure and emit save-room-files via socket
+    const saveTimerRef = useRef<number | null>(null)
+
+    const collectFiles = (item: FileSystemItem, acc: any[] = []) => {
+        if (item.type === "file") {
+            acc.push({ name: item.name, content: item.content || "" })
+        } else if (item.children) {
+            for (const child of item.children) collectFiles(child, acc)
+        }
+        return acc
+    }
+
+    useEffect(() => {
+        // only save if we're in a room
+        const roomId = currentUser?.roomId
+        if (!roomId) return
+
+        if (saveTimerRef.current) {
+            window.clearTimeout(saveTimerRef.current)
+        }
+
+        // debounce 1s
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        saveTimerRef.current = window.setTimeout(() => {
+            const files = collectFiles(fileStructure)
+            try {
+                socket.emit("save-room-files", { roomId, files })
+            } catch (e) {
+                console.warn("Failed to emit save-room-files", e)
+            }
+        }, 1000)
+
+        return () => {
+            if (saveTimerRef.current) {
+                window.clearTimeout(saveTimerRef.current)
+                saveTimerRef.current = null
+            }
+        }
+    }, [fileStructure, socket, currentUser?.roomId])
 
     return (
         <FileContext.Provider
